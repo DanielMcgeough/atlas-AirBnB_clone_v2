@@ -65,3 +65,16 @@ class FileStorage:
             if key in self.__objects:
                 del self.__objects[key]
 
+    def close(self):
+        """Deserialize JSON file to objects"""
+        self.reload()
+
+    def get(self, cls, id):
+        """Retrieve an object"""
+        if cls is not None and type(cls) is str and id is not None and\
+           type(id) is str and cls in classes:
+            key = cls + '.' + id
+            obj = self.__objects.get(key, None)
+            return obj
+        else:
+            return None
