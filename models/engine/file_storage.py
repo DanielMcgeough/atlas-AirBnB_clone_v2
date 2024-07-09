@@ -35,6 +35,10 @@ class FileStorage:
         if obj is not None:
             del self.__objects[obj.__class__.__name__ + '.' + obj.id]
             self.save()
+    
+    def close(self):
+        """Deserialize JSON file to objects"""
+        self.reload()
 
     def reload(self):
         """Loads storage dictionary from file"""

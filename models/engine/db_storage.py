@@ -101,6 +101,10 @@ class DBStorage:
 
         also creates current database session
         """
+
+    def close(self):
+        """Dispose of current session if active"""
+        self.__session.remove()
         # create all tables in database
         Base.metadata.create_all(self.__engine)
 
