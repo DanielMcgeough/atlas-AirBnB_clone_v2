@@ -1,37 +1,27 @@
-#!/usr/bin/python3
-""" Place Module for HBNB project """
-from models.base_model import BaseModel, Base
+#!/usr/bin/python
+""" holds class Place"""
 import models
+from models.base_model import BaseModel, Base
 from os import getenv
-from sqlalchemy import Column, Float, Integer, String, ForeignKey, Table
+import sqlalchemy
+from sqlalchemy import Column, String, Integer, Float, ForeignKey, Table
 from sqlalchemy.orm import relationship
 
-
-if getenv('HBNB_TYPE_STORAGE') == 'db':
+if models.storage_t == 'db':
     place_amenity = Table('place_amenity', Base.metadata,
                           Column('place_id', String(60),
-                                 ForeignKey('places.id',
-                                            onupdate='CASCADE',
+                                 ForeignKey('places.id', onupdate='CASCADE',
                                             ondelete='CASCADE'),
                                  primary_key=True),
                           Column('amenity_id', String(60),
-                                 ForeignKey('amenities.id',
-                                            onupdate='CASCADE',
+                                 ForeignKey('amenities.id', onupdate='CASCADE',
                                             ondelete='CASCADE'),
                                  primary_key=True))
 
-# onupdate and ondelete are options used in database 
-# schema definitions, particularly when defining 
-# relationships between tables. These options specify 
-# what actions should be taken on related rows when 
-# the rows in the referenced table are updated or deleted.
-# Cascade update the foreign key when the row is updated
-# or deleted.
 
 class Place(BaseModel, Base):
-    """ A place to stay """
-
-    if getenv('HBNB_TYPE_STORAGE') == 'db':
+    """Representation of Place """
+    if models.storage_t == 'db':
         __tablename__ = 'places'
         city_id = Column(String(60), ForeignKey('cities.id'), nullable=False)
         user_id = Column(String(60), ForeignKey('users.id'), nullable=False)
@@ -44,8 +34,7 @@ class Place(BaseModel, Base):
         latitude = Column(Float, nullable=True)
         longitude = Column(Float, nullable=True)
         reviews = relationship("Review", backref="place")
-        amenities = relationship("Amenity", 
-                                 secondary="place_amenity",
+        amenities = relationship("Amenity", secondary="place_amenity",
                                  backref="place_amenities",
                                  viewonly=False)
     else:
@@ -60,13 +49,15 @@ class Place(BaseModel, Base):
         latitude = 0.0
         longitude = 0.0
         amenity_ids = []
-        review_ids = []
-        amenities = []
-        reviews = []
 
+    def __init__(self, *args, **kwargs):
+        """initializes Place"""
+        super().__init__(*args, **kwargs)
+
+    if models.storage_t != 'db':
         @property
         def reviews(self):
-            """returns a list of reviews"""
+            """getter attribute returns the list of Review instances"""
             from models.review import Review
             review_list = []
             all_reviews = models.storage.all(Review)
@@ -77,7 +68,7 @@ class Place(BaseModel, Base):
 
         @property
         def amenities(self):
-            """returns a list of amenities"""
+            """getter attribute returns the list of Amenity instances"""
             from models.amenity import Amenity
             amenity_list = []
             all_amenities = models.storage.all(Amenity)
