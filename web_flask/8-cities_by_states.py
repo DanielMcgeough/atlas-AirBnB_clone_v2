@@ -15,13 +15,10 @@ def close(self):
 
 
 @app.route('/cities_by_states', strict_slashes=False)
-def states_list():
-    """ returns a list of cities by state """
-    states = storage.all(State).values()
-    for state in states:
-        state.cities.sort(key=lambda city: city.name)
-    sorted_states = sorted(states, key=lambda state: state.name)
-    return render_template('8-cities_by_states.html', states=sorted_states)
+def cities_by_states():
+    """Displays a html page with states and cities"""
+    states = storage.all(State)
+    return render_template('8-cities_by_states.html', states=states)
 
 
 if __name__ == '__main__':
